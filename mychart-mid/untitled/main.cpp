@@ -1,5 +1,4 @@
 #include"../../lib/common.h"
-#define MAXLINE 1024
 int main(int argc,char **argv){
     if(argc!=3){
         printf("tcp_client <IPaddress> <port>");
@@ -70,7 +69,5 @@ int main(int argc,char **argv){
             }
         }
     }
-
-
     return 0;
 }
