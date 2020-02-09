@@ -9,8 +9,6 @@ struct buffer {
     int writeIndex;      //缓冲写入位置
     int total_size;      //总大小
 };
-
-
 struct buffer *buffer_new();
 
 void buffer_free(struct buffer *buffer);

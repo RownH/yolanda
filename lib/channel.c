@@ -13,11 +13,11 @@ channel_new(int fd, int events, event_read_callback eventReadCallback, event_wri
     return chan;
 }
 
-int channel_write_event_is_enabled(struct channel *channel) {
+int channel_write_event_is_enabled(struct channel *channel) { //判断该套芥子是否可写
     return channel->events & EVENT_WRITE;
 }
 
-int channel_write_event_enable(struct channel *channel) {
+int channel_write_event_enable(struct channel *channel) {  //修改套接字为可写
     struct event_loop *eventLoop = (struct event_loop *) channel->data;
     channel->events = channel->events | EVENT_WRITE;
     event_loop_update_channel_event(eventLoop, channel->fd, channel);

@@ -6,7 +6,7 @@
 #define MAXEVENTS 128
 
 typedef struct {
-    int event_count;
+    int event_count; //事件总数
     int nfds;
     int realloc_copy;
     int efd;
@@ -26,7 +26,7 @@ static int epoll_dispatch(struct event_loop *, struct timeval *);
 
 static void epoll_clear(struct event_loop *);
 
-const struct event_dispatcher epoll_dispatcher = {
+const struct event_dispatcher epoll_dispatcher = { //初始化回调函数和epoll类型
         "epoll",
         epoll_init,
         epoll_add,
@@ -44,7 +44,7 @@ void *epoll_init(struct event_loop *eventLoop) {
     epollDispatcherData->realloc_copy = 0;
     epollDispatcherData->efd = 0;
 
-    epollDispatcherData->efd = epoll_create1(0);
+    epollDispatcherData->efd = epoll_create1(0); //epoll句柄
     if (epollDispatcherData->efd == -1) {
         error(1, errno, "epoll create failed");
     }
@@ -60,10 +60,10 @@ int epoll_add(struct event_loop *eventLoop, struct channel *channel1) {
 
     int fd = channel1->fd;
     int events = 0;
-    if (channel1->events & EVENT_READ) {
+    if (channel1->events & EVENT_READ) {  //有读事件
         events = events | EPOLLIN;
     }
-    if (channel1->events & EVENT_WRITE) {
+    if (channel1->events & EVENT_WRITE) {  //写事件
         events = events | EPOLLOUT;
     }
 
@@ -71,7 +71,7 @@ int epoll_add(struct event_loop *eventLoop, struct channel *channel1) {
     event.data.fd = fd;
     event.events = events;
 //    event.events = events | EPOLLET;
-    if (epoll_ctl(pollDispatcherData->efd, EPOLL_CTL_ADD, fd, &event) == -1) {
+    if (epoll_ctl(pollDispatcherData->efd, EPOLL_CTL_ADD, fd, &event) == -1) {//添加事件到事件队列中
         error(1, errno, "epoll_ctl add  fd failed");
     }
 
@@ -133,6 +133,7 @@ int epoll_dispatch(struct event_loop *eventLoop, struct timeval *timeval) {
     int i, n;
 
     n = epoll_wait(epollDispatcherData->efd, epollDispatcherData->events, MAXEVENTS, -1);
+    //wait 事件
     yolanda_msgx("epoll_wait wakeup, %s", eventLoop->thread_name);
     for (i = 0; i < n; i++) {
         if ((epollDispatcherData->events[i].events & EPOLLERR) || (epollDispatcherData->events[i].events & EPOLLHUP)) {

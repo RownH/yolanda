@@ -1,7 +1,7 @@
 #include "buffer.h"
 #include "common.h"
 
-const char *CRLF = "\r\n";
+const char *CRLF = "\r\n";  //结尾符号
 
 struct buffer *buffer_new() {
     struct buffer *buffer1 = malloc(sizeof(struct buffer));
@@ -15,24 +15,24 @@ struct buffer *buffer_new() {
     return buffer1;
 }
 
-void buffer_free(struct buffer *buffer1) {
+void buffer_free(struct buffer *buffer1) {   //释放资源
     free(buffer1->data);
     free(buffer1);
 }
 
-int buffer_writeable_size(struct buffer *buffer) {
+int buffer_writeable_size(struct buffer *buffer) { //可写的大小
     return buffer->total_size - buffer->writeIndex;
 }
 
-int buffer_readable_size(struct buffer *buffer) {
+int buffer_readable_size(struct buffer *buffer) {  //可读的大小
     return buffer->writeIndex - buffer->readIndex;
 }
 
 int buffer_front_spare_size(struct buffer *buffer) {
-    return buffer->readIndex;
+    return buffer->readIndex;   //返回当前阅读
 }
 
-void make_room(struct buffer *buffer, int size) {
+void make_room(struct buffer *buffer, int size) { //调整空间
     if (buffer_writeable_size(buffer) >= size) {
         return;
     }

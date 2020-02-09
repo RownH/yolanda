@@ -7,8 +7,9 @@
 #include "common.h"
 
 extern const struct event_dispatcher poll_dispatcher;
+// poll  类型分发
 extern const struct event_dispatcher epoll_dispatcher;
-
+// epoll 类型分发
 struct channel_element {
     int type; //1: add  2: delete
     struct channel *channel;
