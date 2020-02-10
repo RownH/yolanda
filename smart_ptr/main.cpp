@@ -43,7 +43,7 @@ public:
         }
     }
     template<typename U>
-    smart_ptr(smart_ptr<U> &&other){
+    smart_ptr(smart_ptr<U> &&other)noexcept {
         m_ptr=other.m_ptr;
         if(m_ptr){
            m_ref_count=other.m_ref_count;
@@ -57,11 +57,20 @@ public:
            m_ref_count=ptr.m_ref_count;
         }
     }
-    smart_ptr &operator=( smart_ptr ptr){
+    smart_ptr &operator=( smart_ptr ptr) noexcept{
         smart_ptr(ptr).swap(*this);   //构造临时对象  交换指针
         return  *this;
     }
-    ~smart_ptr(){
+      template <typename U>
+    smart_ptr(const smart_ptr<U>& other,T* ptr) noexcept{
+        m_ptr = ptr;
+
+        if (m_ptr) {
+            other.m_ref_count->add_count();
+            m_ref_count=other.shared_count_;
+        }
+    }
+   ~smart_ptr(){
         if(!m_ref_count->reduce_count() && m_ptr){
             delete  m_ref_count;
             delete  m_ptr;
@@ -88,7 +97,7 @@ public:
         std::swap(m_ptr,rhs.m_ptr);
         std::swap(m_ref_count,rhs.m_ref_count);
     }
-    long use_count(){
+    long use_count()noexcept{
         if(m_ptr){
             return m_ref_count->get_count();
         }
@@ -96,10 +105,31 @@ public:
             return 0;
         }
     }
+
 private:
     T * m_ptr;
     shared_count * m_ref_count;
 };
+template <typename T,typename U>
+smart_ptr<T> static_poiner_cast(const smart_ptr<U> &other){
+    T*ptr=static_cast<T*>(other.get());
+    return smart_ptr<T>(other,ptr);
+}
+template <typename T,typename U>
+smart_ptr<T> dynamic_poiner_cast(const smart_ptr<U> &other){
+    T*ptr=dynamic_cast<T*>(other.get());
+    return smart_ptr<T>(other,ptr);
+}
+template <typename T,typename U>
+smart_ptr<T> reinterpret_pointer_cast(const smart_ptr<U>&other)noexcept{
+    T* ptr=reinterpret_cast<T*>(other.ptr);
+    return smart_ptr<T>(other,ptr);
+}
+template <typename T,typename U>
+smart_ptr<T> const_pointer_cast(const smart_ptr<U>&other)noexcept{
+    T* ptr=const_cast<T*>(other.ptr);
+    return smart_ptr<T>(other,ptr);
+}
 
 int main()
 {
